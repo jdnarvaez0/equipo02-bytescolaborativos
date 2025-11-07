@@ -23,3 +23,22 @@ docker-compose up --build
 * PostgreSQL
 * Docker
 * Swagger/OpenAPI
+
+## Estructura (sugerida) del proyecto
+```
+src/main/java/com/codebytes2/recommender
+├── config     → Configuración (Swagger, Security)
+│   ├── security
+│   └── swagger
+├── controller → Endpoints API REST
+├── dto        → Data Transfer Object (request/response)
+│   ├── request
+│   └── response
+├── model      → Entidades JPA
+├── repository → Repositorios
+├── service    → Lógica de negocio
+│   └── impl
+├── mapper     → Mapeo DTO ↔ Entity (MapStruct)
+├── exception  → Excepciones personalizadas
+└── ... 
+```
