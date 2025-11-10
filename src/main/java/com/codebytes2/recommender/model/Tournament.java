@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -48,5 +50,22 @@ public class Tournament {
 
     @Column(nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
+
+    @OneToMany(mappedBy = "tournament", fetch = FetchType.LAZY)
+    private List<TournamentRegistration> registrations = new ArrayList<>();
+
+    @Transient
+    public int getRegisteredCount() {
+        return registrations.stream()
+                .filter(TournamentRegistration::isActive)
+                .toList()
+                .size();
+    }
+
+    @Transient
+    public int getAvailableSlots() {
+        if (maxParticipants == null) return Integer.MAX_VALUE;
+        return Math.max(0, maxParticipants - getRegisteredCount());
+    }
 
 }

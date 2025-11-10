@@ -61,3 +61,8 @@ INSERT INTO ratings (id, user_id, product_id, score, created_at) VALUES
 INSERT INTO tournaments (id, name, game, start_date, end_date, registration_open_at, registration_close_at, rules, max_participants, status, created_at) VALUES
   ('77777777-7777-7777-7777-777777777777', 'Torneo Valorant LATAM', 'Valorant', '2025-06-01 18:00:00', '2025-06-10 18:00:00', '2025-05-10 00:00:00', '2025-05-30 00:00:00', 'Bo3 eliminatoria directa', 64, 'UPCOMING', NOW()),
   ('88888888-8888-8888-8888-888888888888', 'Liga Clash Royale', 'Clash Royale', '2025-07-15 20:00:00', '2025-07-20 22:00:00', '2025-06-01 00:00:00', '2025-07-10 00:00:00', 'Liga suiza + playoffs', 32, 'OPEN', NOW());
+
+INSERT INTO tournament_registrations (id, tournament_id, user_id, nickname, status, registered_at) VALUES
+  ('99999999-9999-9999-9999-999999999999', '77777777-7777-7777-7777-777777777777', 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380b22', 'PlayerOne', 'REGISTERED', NOW()),
+  ('aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaab', '77777777-7777-7777-7777-777777777777', 'c0eebc99-9c0b-4ef8-bb6d-6bb9bd380c33', 'GamerPro', 'REGISTERED', NOW()),
+  ('bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbc', '88888888-8888-8888-8888-888888888888', 'd0eebc99-9c0b-4ef8-bb6d-6bb9bd380d44', 'Clasher99', 'CONFIRMED', NOW());
