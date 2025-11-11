@@ -1,4 +1,4 @@
-package com.codebytes2.recommender.model;
+package com.codebytes2.recommender.auth.commons.models.entity;
 
 import com.codebytes2.recommender.backend.UserRole;
 import jakarta.persistence.*;
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+public class UserEntity implements UserDetails {
 
     @Id
     @GeneratedValue

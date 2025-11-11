@@ -1,5 +1,6 @@
 package com.codebytes2.recommender.model;
 
+import com.codebytes2.recommender.auth.commons.models.entity.UserEntity;
 import com.codebytes2.recommender.backend.RegistrationStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class TournamentRegistration {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserEntity userEntity;
 
     @Column(nullable = false)
     private String nickname;
