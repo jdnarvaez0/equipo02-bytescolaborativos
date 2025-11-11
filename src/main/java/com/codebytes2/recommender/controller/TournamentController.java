@@ -15,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.awt.print.Pageable;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tournaments")
@@ -42,13 +43,13 @@ public class TournamentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TournamentDetailDto> get(@PathVariable Long id) {
+    public ResponseEntity<TournamentDetailDto> get(@PathVariable UUID id) {
         return ResponseEntity.ok(service.getTournament(id));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable UUID id) {
         service.deleteTournament(id);
         return ResponseEntity.noContent().build();
     }

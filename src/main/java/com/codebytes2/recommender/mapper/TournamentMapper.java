@@ -10,7 +10,5 @@ import org.mapstruct.Mapper;
 public interface TournamentMapper {
     Tournament toEntity(TournamentCreateRequest request);
     TournamentSummaryDto toSummaryDto(Tournament tournament);
-    TournamentDetailDto toDetalDto(Tournament tournament);
-
     TournamentDetailDto toDetailDto(Tournament tournament);
 }

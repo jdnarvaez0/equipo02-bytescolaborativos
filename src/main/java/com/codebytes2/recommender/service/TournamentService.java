@@ -17,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.awt.print.Pageable;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +41,7 @@ public class TournamentService {
     }
 
     public Page<TournamentSummaryDto> listTournaments(Pageable pageable, String status, String game, String q) {
-        Specification<Tournament> spec = Specification.where(null);
+        Specification<Tournament> spec = (root, query, cb) -> cb.conjunction();
 
         if (status != null) {
             spec = spec.and((root, query, cb) ->
@@ -61,13 +62,13 @@ public class TournamentService {
         return repository.findAll(spec, pageable).map(mapper::toSummaryDto);
     }
 
-    public TournamentDetailDto getTournament(Long id) {
+    public TournamentDetailDto getTournament(UUID id) {
         Tournament tournament = repository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
         return mapper.toDetailDto(tournament);
     }
 
-    public void deleteTournament(Long id) {
+    public void deleteTournament(UUID id) {
         if (!repository.existsById(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
