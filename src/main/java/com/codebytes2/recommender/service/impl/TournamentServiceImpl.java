@@ -30,4 +30,8 @@ public class TournamentServiceImpl implements TournamentService {
     public Page<TournamentSummaryDto> searchTournamentsByGame(String game, Pageable pageable) {
         return null;
     }
+
+    @Override
+    public void deleteTournament(UUID id) {
+    }
 }
