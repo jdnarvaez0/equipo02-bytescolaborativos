@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public TokenResponse createUser(@Valid UserEntityRequest userEntityRequest) {
+    public TokenResponse createUser(UserEntityRequest userEntityRequest) {
         log.info("Intentando crear usuario para email: {}", userEntityRequest.getEmail());
 
         if (userEntityRepository.findByEmail(userEntityRequest.getEmail()).isPresent()) {
@@ -57,6 +57,7 @@ public class AuthServiceImpl implements AuthService {
     public TokenResponse login(LoginRequest loginRequest) {
         log.info("Intentando login para usuario: {}", loginRequest.getEmail());
 
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
@@ -73,6 +74,7 @@ public class AuthServiceImpl implements AuthService {
 
         return jwtService.generateToken(user.getEmail(), user.getRoles());
     }
+
 
     private UserEntity mapToEntity(UserEntityRequest userEntityRequest, UserRole role) {
         UserEntity user = new UserEntity();

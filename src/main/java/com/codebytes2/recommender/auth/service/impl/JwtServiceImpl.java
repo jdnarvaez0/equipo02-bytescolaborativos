@@ -19,7 +19,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+
 public class JwtServiceImpl implements JwtService {
 
     private static final Logger log = LoggerFactory.getLogger(JwtServiceImpl.class);
