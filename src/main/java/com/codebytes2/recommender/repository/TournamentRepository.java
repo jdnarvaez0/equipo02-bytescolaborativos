@@ -15,11 +15,11 @@ public interface TournamentRepository extends JpaRepository<Tournament, UUID> {
     Page<Tournament> findByStatus(TournamentStatus status, Pageable pageable);
     Page<Tournament> findByGameIgnoreCaseContaining(String game, Pageable pageable);
 
-    boolean existsById(Long id);
+    boolean existsById(UUID id);
 
-    void deleteById(Long id);
+    void deleteById(UUID id);
 
-    Optional<Tournament> findById(Long id);
+    Optional<Tournament> findById(UUID id);
 
 
     Remapper findAll(Specification<Tournament> spec, java.awt.print.Pageable pageable);

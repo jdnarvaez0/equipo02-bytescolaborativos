@@ -1,8 +1,8 @@
 package com.codebytes2.recommender.controller;
 
-import com.codebytes2.recommender.dto.TournamentCreateRequest;
-import com.codebytes2.recommender.dto.TournamentDetailDto;
-import com.codebytes2.recommender.dto.TournamentSummaryDto;
+import com.codebytes2.recommender.dto.request.TournamentCreateRequest;
+import com.codebytes2.recommender.dto.response.TournamentDetailDto;
+import com.codebytes2.recommender.dto.response.TournamentSummaryDto;
 import com.codebytes2.recommender.service.TournamentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
