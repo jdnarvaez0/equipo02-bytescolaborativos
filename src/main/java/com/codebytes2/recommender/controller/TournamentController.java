@@ -8,27 +8,21 @@ import com.codebytes2.recommender.service.TournamentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable; // Usar Pageable de Spring Data
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-
 import org.springframework.web.bind.annotation.*;
+
 import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/tournaments")
 @RequiredArgsConstructor
-class TournamentControllerService {
-
-}
 public class TournamentController {
-    private final TournamentService service;
 
-    public TournamentController(TournamentService service) {
-        this.service = service;
-    }
+    private final TournamentService service;
 
     /**
      * Crea un nuevo torneo.
@@ -57,7 +51,7 @@ public class TournamentController {
     public ResponseEntity<Page<TournamentSummaryDto>> listByStatus(
             @PathVariable TournamentStatus status,
             @PageableDefault(size = 20, sort = "startDate") Pageable pageable) {
-        Page<TournamentSummaryDto> tournaments = service.getTournamentsByStatus(status, (java.awt.print.Pageable) pageable);
+        Page<TournamentSummaryDto> tournaments = service.getTournamentsByStatus(status, pageable);
         return ResponseEntity.ok(tournaments);
     }
 
@@ -68,7 +62,7 @@ public class TournamentController {
     public ResponseEntity<Page<TournamentSummaryDto>> searchByGame(
             @RequestParam String game,
             @PageableDefault(size = 20, sort = "startDate") Pageable pageable) {
-        Page<TournamentSummaryDto> tournaments = service.searchTournamentsByGame(game, (java.awt.print.Pageable) pageable);
+        Page<TournamentSummaryDto> tournaments = service.searchTournamentsByGame(game, pageable);
         return ResponseEntity.ok(tournaments);
     }
 
@@ -79,7 +73,6 @@ public class TournamentController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteTournament(@PathVariable UUID id) {
-        // Llama al nuevo método deleteTournament del servicio
         service.deleteTournament(id);
         return ResponseEntity.noContent().build();
     }
