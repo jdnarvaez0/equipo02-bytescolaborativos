@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface TournamentRegistrationRepository extends JpaRepository<TournamentRegistration, UUID> {
 
-    boolean existsByTournamentIdAndUserId(UUID tournamentId, UUID userId);
+    boolean existsByTournamentIdAndUserEntityId(UUID tournamentId, UUID userId);
 
     @Query("SELECT COUNT(tr) FROM TournamentRegistration tr " +
             "WHERE tr.tournament.id = :tournamentId AND tr.status IN " +
