@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.UUID;
 
 public interface RatingRepository extends JpaRepository<Rating, UUID> {
-    List<Rating> findByUserId(UUID userId);
+    List<Rating> findByUserEntityId(UUID userId);
     List<Rating> findByProductId(UUID productId);
-    boolean existsByUserIdAndProductId(UUID userId, UUID productId);
+    boolean existsByUserEntityIdAndProductId(UUID userId, UUID productId);
 }

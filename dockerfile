@@ -13,13 +13,19 @@ RUN chmod +x ./mvnw
 # Copiar código fuente
 COPY src ./src
 
-# Construir
+# Construir con caché de Maven
 RUN --mount=type=cache,target=/root/.m2 \
     ./mvnw clean package -DskipTests --no-transfer-progress
 
 # Etapa 2: Runtime
 FROM eclipse-temurin:17-jre
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+
+# Copiar el JAR generado desde la etapa de build
+COPY --from=builder /app/target/recommender-engine-0.0.1-SNAPSHOT.jar app.jar
+
+# Exponer el puerto de la aplicación
 EXPOSE 8080
+
+# Ejecutar la aplicación
 ENTRYPOINT ["java", "-jar", "app.jar"]

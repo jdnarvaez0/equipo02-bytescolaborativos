@@ -1,8 +1,9 @@
-package com.codebytes2.recommender.model;
+package com.codebytes2.recommender.auth.commons.models.entity;
 
-import com.codebytes2.recommender.backend.UserRole;
+import com.codebytes2.recommender.auth.commons.models.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -19,12 +20,13 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "users")
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class User implements UserDetails {
+public class UserEntity implements UserDetails {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false, unique = true)
