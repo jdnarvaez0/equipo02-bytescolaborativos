@@ -6,10 +6,12 @@ import com.codebytes2.recommender.dto.response.TournamentDetailDto;
 import com.codebytes2.recommender.dto.response.TournamentSummaryDto;
 import com.codebytes2.recommender.service.TournamentService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service; // <-- AÑADIDO
 
-import java.awt.print.Pageable;
 import java.util.UUID;
 
+@Service // <-- AÑADIDO
 public class TournamentServiceImpl implements TournamentService {
     @Override
     public TournamentDetailDto createTournament(TournamentCreateRequest request) {

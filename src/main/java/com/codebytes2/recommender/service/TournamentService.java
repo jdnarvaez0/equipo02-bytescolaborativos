@@ -5,9 +5,9 @@ import com.codebytes2.recommender.dto.request.TournamentCreateRequest;
 import com.codebytes2.recommender.dto.response.TournamentDetailDto;
 import com.codebytes2.recommender.dto.response.TournamentSummaryDto;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable; // <-- CORREGIDO
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
 import java.util.UUID;
 
 @Service

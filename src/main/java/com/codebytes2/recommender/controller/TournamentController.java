@@ -24,10 +24,6 @@ public class TournamentController {
 
     private final TournamentService service;
 
-    /**
-     * Crea un nuevo torneo.
-     * Requiere el rol 'ADMIN'.
-     */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<TournamentDetailDto> createTournament(@Valid @RequestBody TournamentCreateRequest request) {
@@ -35,18 +31,12 @@ public class TournamentController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdTournament);
     }
 
-    /**
-     * Obtiene los detalles de un torneo por su ID.
-     */
     @GetMapping("/{id}")
     public ResponseEntity<TournamentDetailDto> getTournamentDetail(@PathVariable UUID id) {
         TournamentDetailDto tournament = service.getTournamentById(id);
         return ResponseEntity.ok(tournament);
     }
 
-    /**
-     * Lista torneos filtrados por estado.
-     */
     @GetMapping("/status/{status}")
     public ResponseEntity<Page<TournamentSummaryDto>> listByStatus(
             @PathVariable TournamentStatus status,
@@ -55,9 +45,6 @@ public class TournamentController {
         return ResponseEntity.ok(tournaments);
     }
 
-    /**
-     * Busca torneos por el nombre del juego.
-     */
     @GetMapping("/game")
     public ResponseEntity<Page<TournamentSummaryDto>> searchByGame(
             @RequestParam String game,
@@ -66,10 +53,6 @@ public class TournamentController {
         return ResponseEntity.ok(tournaments);
     }
 
-    /**
-     * Elimina un torneo por su ID.
-     * Requiere el rol 'ADMIN'.
-     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteTournament(@PathVariable UUID id) {
