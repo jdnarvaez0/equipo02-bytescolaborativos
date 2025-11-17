@@ -68,4 +68,6 @@ public class Tournament {
         return Math.max(0, maxParticipants - getRegisteredCount());
     }
 
+    public void setParticipants(ArrayList<Object> objects) {
+    }
 }

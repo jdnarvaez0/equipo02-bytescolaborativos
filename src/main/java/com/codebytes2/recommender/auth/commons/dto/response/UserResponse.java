@@ -15,7 +15,6 @@ public class UserResponse {
     private UUID id;
     private String username;
     private String email;
-    private String password;
     private Set<UserRole> roles;
 
     public static UserResponse fromEntity (UserEntity userEntity){
@@ -23,7 +22,6 @@ public class UserResponse {
                 .id(userEntity.getId())
                 .username(userEntity.getUsername())
                 .email(userEntity.getEmail())
-                .password(userEntity.getPassword())
                 .roles(userEntity.getRoles())
                 .build();
     }

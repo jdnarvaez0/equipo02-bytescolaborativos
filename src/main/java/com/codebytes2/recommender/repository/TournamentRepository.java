@@ -10,5 +10,5 @@ import java.util.UUID;
 
 public interface TournamentRepository extends JpaRepository<Tournament, UUID> {
     Page<Tournament> findByStatus(TournamentStatus status, Pageable pageable);
-    Page<Tournament> findByGameIgnoreCaseContaining(String game, Pageable pageable);
+    Page<Tournament> findByGameContainingIgnoreCase(String game, Pageable pageable);
 }
