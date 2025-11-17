@@ -5,6 +5,7 @@ import com.codebytes2.recommender.auth.service.impl.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -38,6 +39,10 @@ public class SecurityConfig {
                                 "/v3/api-docs/**",
                                 "/api/health"
                         ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/tournaments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/tournaments/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/tournaments").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/tournaments/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

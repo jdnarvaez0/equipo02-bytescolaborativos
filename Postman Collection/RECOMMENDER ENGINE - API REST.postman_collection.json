@@ -1,0 +1,414 @@
+{
+	"info": {
+		"_postman_id": "a32cbc6c-cdbd-4c6a-8ab0-3336e4a5df79",
+		"name": "RECOMMENDER ENGINE - API REST",
+		"description": "Colección porbar el API REST de **RECOMMENDER ENGINE**:\n\n_(Configuración, BD, Auth JWT, CRUD Torneos, Swagger)_.\n\n- Pre-requisito: App corriendo en localhost:8080",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45943072"
+	},
+	"item": [
+		{
+			"name": "API Health",
+			"item": [
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/health",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "POST Register (Player)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ✅ Status 201 Created\npm.test(\"Status 201\", () => pm.response.to.have.status(201));\n\n// ✅ Response schema\npm.test(\"Response has expected fields\", () => {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"username\", \"player4\");\n    pm.expect(json).to.have.property(\"email\", \"player4@example.com\");\n    pm.expect(json).to.have.property(\"roles\");\n    pm.expect(json.roles).to.eql([\"PLAYER\"]);\n    \n    // Guardar ID para futuras pruebas\n    pm.environment.set(\"player4Id\", json.id);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"player4\",\n  \"email\": \"player4@example.com\",\n  \"password\": \"Pass123!\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/register",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "201 Created",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"username\": \"player4\",\n  \"email\": \"player4@example.com\",\n  \"password\": \"Pass123!\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/auth/register",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"id\": \"f47ac10b-58cc-4372-a567-0e02b2c3d479\",\n  \"username\": \"player4\",\n  \"email\": \"player4@example.com\",\n  \"roles\": [\"PLAYER\"]\n}"
+						}
+					]
+				},
+				{
+					"name": "POST Login (Admin)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ✅ Status 200 OK\npm.test(\"Status 200\", () => pm.response.to.have.status(200));\n\n// ✅ Has access_token\npm.test(\"Response has access_token\", () => {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"accessToken\");\n    pm.expect(json.accessToken).to.be.a(\"string\");\n    \n    // Guardar token\n    pm.environment.set(\"adminToken\", json.accessToken);\n    \n    // Verificar estructura JWT (header.payload.signature)\n    const parts = json.accessToken.split('.');\n    pm.expect(parts).to.have.lengthOf(3);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+								},
+								"url": {
+									"raw": "http://localhost:8080/auth/login",
+									"protocol": "http",
+									"host": [
+										"localhost"
+									],
+									"port": "8080",
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"accessToken\": \"eyJhbGciOiJIUzI1NiJ9.xxxxx.yyyyy\"\n}"
+						}
+					]
+				},
+				{
+					"name": "POST Login (Player)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\nconst json = pm.response.json();\npm.expect(json).to.have.property(\"accessToken\");\npm.environment.set(\"playerToken\", json.accessToken);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"player1@example.com\",\n  \"password\": \"password\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Torneos (ADMIN)",
+			"item": [
+				{
+					"name": "POST Create Tournament",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// ✅ Status 201\npm.test(\"Status 201\", () => pm.response.to.have.status(201));\n\n// ✅ Response schema\npm.test(\"Response has full tournament details\", () => {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"id\");\n    pm.expect(json).to.have.property(\"name\", \"Torneo CS2 Sprint1\");\n    pm.expect(json).to.have.property(\"game\", \"Counter-Strike 2\");\n    pm.expect(json).to.have.property(\"status\", \"OPEN\");\n    pm.expect(json).to.have.property(\"participants\", 0);\n    \n    pm.environment.set(\"tournamentId\", json.id);\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Torneo CS2 Sprint1\",\n  \"game\": \"Counter-Strike 2\",\n  \"startDate\": \"2025-12-10T18:00:00Z\",\n  \"endDate\": \"2025-12-12T22:00:00Z\",\n  \"registrationOpenAt\": \"2025-11-25T00:00:00Z\",\n  \"registrationCloseAt\": \"2025-12-05T00:00:00Z\",\n  \"rules\": \"Bo3, mapas oficiales\",\n  \"maxParticipants\": 16\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/tournaments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tournaments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE Tournament",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 204\", () => pm.response.to.have.status(204));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{adminToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/tournaments/{{tournamentId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tournaments",
+								"{{tournamentId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Torneos (Público)",
+			"item": [
+				{
+					"name": "GET List by Status (OPEN)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Response is paginated\", () => {\n    const json = pm.response.json();\n    pm.expect(json).to.have.property(\"content\");\n    pm.expect(json.content).to.be.an(\"array\");\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/tournaments/status/OPEN?page=0&size=5",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tournaments",
+								"status",
+								"OPEN"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "5"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET Search by Game (Valorant)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));\npm.test(\"Has tournaments with 'Valorant'\", () => {\n    const json = pm.response.json();\n    if (json.content.length > 0) {\n        const first = json.content[0];\n        pm.expect(first.game.toLowerCase()).to.include(\"valorant\");\n    }\n});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/tournaments/game?game=valorant",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"tournaments",
+								"game"
+							],
+							"query": [
+								{
+									"key": "game",
+									"value": "valorant"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		}
+	]
+}

@@ -24,13 +24,6 @@ spring:
     init:
       mode: always
 
-  # CREDENCIALES PARA DESARROLLO - OJO!
-  security:
-    user:
-      name: admin
-      password: password
-      roles: ADMIN,PLAYER
-
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher

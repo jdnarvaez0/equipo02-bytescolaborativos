@@ -1,5 +1,6 @@
 package com.codebytes2.recommender.dto.response;
 
+import com.codebytes2.recommender.backend.TournamentStatus;
 import lombok.Data;
 
 import java.util.UUID;
@@ -9,5 +10,6 @@ public class TournamentSummaryDto {
     private UUID id;
     private String name;
     private String game;
-    private int participants; // usa getRegisteredCount()
+    private TournamentStatus status;
+    private Integer participants;
 }

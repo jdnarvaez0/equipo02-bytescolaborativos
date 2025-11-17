@@ -3,13 +3,13 @@ package com.codebytes2.recommender.auth.service.impl;
 import com.codebytes2.recommender.auth.commons.dto.request.LoginRequest;
 import com.codebytes2.recommender.auth.commons.dto.request.UserEntityRequest;
 import com.codebytes2.recommender.auth.commons.dto.response.TokenResponse;
+import com.codebytes2.recommender.auth.commons.dto.response.UserResponse;
 import com.codebytes2.recommender.auth.commons.models.entity.UserEntity;
 import com.codebytes2.recommender.auth.commons.models.enums.UserRole;
 import com.codebytes2.recommender.auth.exceptions.DuplicateEmailException;
 import com.codebytes2.recommender.auth.repository.UserEntityRepository;
 import com.codebytes2.recommender.auth.service.AuthService;
 import com.codebytes2.recommender.auth.service.JwtService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,23 +34,20 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public TokenResponse createUser(UserEntityRequest userEntityRequest) {
-        log.info("Intentando crear usuario para email: {}", userEntityRequest.getEmail());
-
+    public UserResponse createUser(UserEntityRequest userEntityRequest) {
         if (userEntityRepository.findByEmail(userEntityRequest.getEmail()).isPresent()) {
-            log.warn("Intento de crear usuario con email existente: {}", userEntityRequest.getEmail());
             throw new DuplicateEmailException("El email ya está registrado");
         }
 
-        UserEntity userToSave = mapToEntity(userEntityRequest, UserRole.ADMIN);
+        UserEntity userToSave = mapToEntity(userEntityRequest, UserRole.PLAYER);
         UserEntity userCreated = userEntityRepository.save(userToSave);
-        log.info("Usuario creado exitosamente con ID: {}", userCreated.getId());
 
-        String rolesAsString = userCreated.getRoles().stream()
-                .map(Enum::name)
-                .collect(Collectors.joining(","));
-
-        return jwtService.generateToken(userCreated.getEmail(), userCreated.getRoles());
+        return UserResponse.builder()
+                .id(userCreated.getId())
+                .username(userCreated.getUsername())
+                .email(userCreated.getEmail())
+                .roles(userCreated.getRoles())
+                .build();
     }
 
     @Override

@@ -2,8 +2,10 @@ package com.codebytes2.recommender.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -15,5 +17,10 @@ public class HealthCheckController {
     @GetMapping("/health")
     public String health() {
         return "✅ Recommender Engine is running!";
+    }
+
+    @GetMapping("/debug/bcrypt")
+    public String generateBcrypt(@RequestParam String raw) {
+        return new BCryptPasswordEncoder().encode(raw);
     }
 }
