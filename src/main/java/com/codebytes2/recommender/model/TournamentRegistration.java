@@ -2,6 +2,7 @@ package com.codebytes2.recommender.model;
 
 import com.codebytes2.recommender.auth.commons.models.entity.UserEntity;
 import com.codebytes2.recommender.backend.RegistrationStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,10 +27,12 @@ public class TournamentRegistration {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tournament_id", nullable = false)
+    @JsonIgnore
     private Tournament tournament;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnore
     private UserEntity userEntity;
 
     @Column(nullable = false)

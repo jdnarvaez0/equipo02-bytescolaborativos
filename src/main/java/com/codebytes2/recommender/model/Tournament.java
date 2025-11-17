@@ -1,6 +1,7 @@
 package com.codebytes2.recommender.model;
 
 import com.codebytes2.recommender.backend.TournamentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,6 +53,7 @@ public class Tournament {
     private Instant createdAt = Instant.now();
 
     @OneToMany(mappedBy = "tournament", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<TournamentRegistration> registrations = new ArrayList<>();
 
     @Transient

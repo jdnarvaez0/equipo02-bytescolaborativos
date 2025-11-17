@@ -36,3 +36,6 @@ logging:
   level:
     com.codebytes2.recommender: DEBUG
     org.springframework.security: DEBUG
+    io.swagger.v3: DEBUG
+    org.springdoc: DEBUG
+    org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler: TRACE

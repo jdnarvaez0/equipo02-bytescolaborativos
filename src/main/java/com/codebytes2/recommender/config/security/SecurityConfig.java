@@ -31,18 +31,19 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable()) // JWT no requiere CSRF
                 .authorizeHttpRequests(authz -> authz
-                        .requestMatchers(
-                                "/auth/**", // Endpoints públicos
-                                "/swagger-ui.html",
-                                "/swagger-ui/**",
-                                "/v3/api-docs",
-                                "/v3/api-docs/**",
-                                "/api/health"
-                        ).permitAll()
+
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
+                        .requestMatchers("/auth/**", "/api/health").permitAll()
+
                         .requestMatchers(HttpMethod.GET, "/api/tournaments").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/tournaments/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/tournaments/status/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/tournaments/search/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/tournaments/{id}").permitAll()  // UUID explícito
+
                         .requestMatchers(HttpMethod.POST, "/api/tournaments").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/tournaments/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/tournaments/{id}").hasRole("ADMIN")
+
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
