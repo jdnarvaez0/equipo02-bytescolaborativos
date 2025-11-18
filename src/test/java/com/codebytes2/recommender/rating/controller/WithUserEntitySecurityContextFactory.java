@@ -8,12 +8,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Component("ratingWithUserEntitySecurityContextFactory")
 public class WithUserEntitySecurityContextFactory implements WithSecurityContextFactory<RatingControllerTest.WithUserEntity> {
 
     @Override
