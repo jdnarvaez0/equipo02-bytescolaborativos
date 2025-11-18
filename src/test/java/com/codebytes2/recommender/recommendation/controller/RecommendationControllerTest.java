@@ -6,6 +6,7 @@ import com.codebytes2.recommender.controller.RecommendationController;
 import com.codebytes2.recommender.dto.response.RecommendationResponseDto;
 import com.codebytes2.recommender.dto.response.RecommendedProductDto;
 import com.codebytes2.recommender.service.RecommendationService;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -16,6 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
@@ -100,5 +102,46 @@ class RecommendationControllerTest {
         mockMvc.perform(get("/api/recommendations/{userId}", userId)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @WithMockUser(roles = {"PLAYER"})
+    void getRecommendations_InvalidUserId_ReturnsNotFound() throws Exception {
+        // Given
+        UUID userId = UUID.randomUUID();
+
+        given(recommendationService.getRecommendationsForUser(eq(userId)))
+                .willThrow(new EntityNotFoundException("Usuario no encontrado con ID: " + userId));
+
+        // When & Then
+        mockMvc.perform(get("/api/recommendations/{userId}", userId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(roles = {"PLAYER"})
+    void getRecommendations_EmptyRecommendations_ReturnsOkWithEmptyList() throws Exception {
+        // Given
+        UUID userId = UUID.randomUUID();
+
+        RecommendationResponseDto responseDto = RecommendationResponseDto.builder()
+                .id(UUID.randomUUID())
+                .userId(userId)
+                .recommendedProducts(new ArrayList<>()) // Empty list
+                .computedAt(Instant.now())
+                .algorithmVersion("v1.0")
+                .build();
+
+        given(recommendationService.getRecommendationsForUser(eq(userId)))
+                .willReturn(responseDto);
+
+        // When & Then
+        mockMvc.perform(get("/api/recommendations/{userId}", userId)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(userId.toString()))
+                .andExpect(jsonPath("$.recommendedProducts").isArray())
+                .andExpect(jsonPath("$.recommendedProducts").isEmpty());
     }
 }

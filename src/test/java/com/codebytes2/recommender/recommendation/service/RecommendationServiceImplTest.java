@@ -155,7 +155,7 @@ class RecommendationServiceImplTest {
     void calculateRelevanceScore_TagSimilarityWorks() {
         // For this test, we'll verify the algorithm behavior by mocking the internal methods
         // The actual algorithm test is embedded in the main functionality
-        
+
         List<Product> allProducts = Arrays.asList(product1, product2, product3);
         Rating rating1 = new Rating();
         rating1.setProduct(product1);
@@ -175,5 +175,49 @@ class RecommendationServiceImplTest {
         assertNotNull(result);
         // Verify that products with tags matching the user's preferences get higher scores
         // (This is tested through the ordering of results in real implementation)
+    }
+
+    @Test
+    void getRecommendationsForUser_NoProductsInSystem_ReturnsEmptyRecommendations() {
+        // Given
+        when(userEntityRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(productRepository.findAll()).thenReturn(new ArrayList<>()); // No products
+        when(ratingRepository.findByUserEntityId(userId)).thenReturn(new ArrayList<>());
+
+        // When
+        RecommendationResponseDto result = recommendationService.getRecommendationsForUser(userId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        assertTrue(result.getRecommendedProducts().isEmpty());
+
+        verify(userEntityRepository).findById(userId);
+        verify(productRepository).findAll();
+        verify(recommendationRepository).save(any(Recommendation.class));
+    }
+
+    @Test
+    void getRecommendationsForUser_UserHasRatedAllProducts_ReturnsNoRecommendations() {
+        // Given
+        List<Product> allProducts = Arrays.asList(product1, product2, product3);
+
+        when(userEntityRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(productRepository.findAll()).thenReturn(allProducts);
+        when(ratingRepository.findByUserEntityId(userId)).thenReturn(new ArrayList<>());
+        // When user has rated all products, all calls return true
+        when(ratingRepository.existsByUserEntityIdAndProductId(eq(userId), any(UUID.class))).thenReturn(true);
+
+        // When
+        RecommendationResponseDto result = recommendationService.getRecommendationsForUser(userId);
+
+        // Then
+        assertNotNull(result);
+        assertEquals(userId, result.getUserId());
+        assertTrue(result.getRecommendedProducts().isEmpty());
+
+        verify(userEntityRepository).findById(userId);
+        verify(productRepository).findAll();
+        verify(ratingRepository, times(allProducts.size())).existsByUserEntityIdAndProductId(eq(userId), any(UUID.class));
     }
 }

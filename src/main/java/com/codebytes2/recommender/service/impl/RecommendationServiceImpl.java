@@ -79,12 +79,13 @@ public class RecommendationServiceImpl implements RecommendationService {
                 .sorted((a, b) -> Double.compare(b.score, a.score)) // Sort by score descending
                 .collect(Collectors.toList());
 
-        // Convert to DTOs with their relevance scores
+        // Convert to DTOs with their relevance scores, filtering out products with score 0 (already rated)
         return scoredProducts.stream()
+                .filter(scoredProduct -> scoredProduct.score > 0) // Only include products with score > 0
                 .map(scoredProduct -> {
                     RecommendedProductDto dto = RecommendedProductDto.fromProduct(scoredProduct.product);
                     dto.setRelevanceScore(scoredProduct.score);
-                    
+
                     // Add average rating to the DTO
                     List<Rating> productRatings = ratingRepository.findByProductId(scoredProduct.product.getId());
                     if (!productRatings.isEmpty()) {
