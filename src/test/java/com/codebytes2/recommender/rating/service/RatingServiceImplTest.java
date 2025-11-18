@@ -1,4 +1,4 @@
-package com.codebytes2.recommender.service.impl;
+package com.codebytes2.recommender.rating.service;
 
 import com.codebytes2.recommender.auth.commons.models.entity.UserEntity;
 import com.codebytes2.recommender.dto.request.ProductRatingRequest;
@@ -9,11 +9,11 @@ import com.codebytes2.recommender.model.Rating;
 import com.codebytes2.recommender.repository.ProductRepository;
 import com.codebytes2.recommender.repository.RatingRepository;
 import com.codebytes2.recommender.auth.repository.UserEntityRepository;
+import com.codebytes2.recommender.service.impl.RatingServiceImpl;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -59,35 +59,30 @@ class RatingServiceImplTest {
     }
 
     @Test
-    void createRatingForAuthenticatedUser_ValidRequest_CreatesRating() {
+    void createRatingByUser_ValidRequest_CreatesRating() {
         // Arrange
         Integer score = 4;
-        ProductRatingRequest request = ProductRatingRequest.builder()
-                .productId(productId)
-                .score(score)
-                .build();
-        
+
         Rating expectedRating = new Rating();
         expectedRating.setScore(score);
         expectedRating.setUserEntity(userEntity);
         expectedRating.setProduct(product);
-        
+
         RatingResponseDto expectedResponse = RatingResponseDto.builder()
                 .id(UUID.randomUUID())
                 .userId(userId)
                 .productId(productId)
                 .score(score)
                 .build();
-        
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(ratingRepository.existsByUserEntityIdAndProductId(userId, productId)).thenReturn(false);
-        when(ratingMapper.toEntityFromRequestWithUserAndProduct(any(ProductRatingRequest.class), any(UserEntity.class), any(Product.class)))
-                .thenReturn(expectedRating);
         when(ratingRepository.save(any(Rating.class))).thenReturn(expectedRating);
         when(ratingMapper.toResponseDto(any(Rating.class))).thenReturn(expectedResponse);
 
         // Act
-        RatingResponseDto result = ratingService.createRatingForAuthenticatedUser(productId, score);
+        RatingResponseDto result = ratingService.createRatingByUser(userId, productId, score);
 
         // Assert
         assertNotNull(result);
@@ -99,61 +94,62 @@ class RatingServiceImplTest {
     }
 
     @Test
-    void createRatingForAuthenticatedUser_ProductNotFound_ThrowsException() {
+    void createRatingByUser_ProductNotFound_ThrowsException() {
         // Arrange
         Integer score = 4;
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(productRepository.findById(productId)).thenReturn(Optional.empty());
 
         // Act & Assert
         EntityNotFoundException exception = assertThrows(
                 EntityNotFoundException.class,
-                () -> ratingService.createRatingForAuthenticatedUser(productId, score)
+                () -> ratingService.createRatingByUser(userId, productId, score)
         );
         assertTrue(exception.getMessage().contains("Producto no encontrado"));
     }
 
     @Test
-    void createRatingForAuthenticatedUser_DuplicateRating_ThrowsException() {
+    void createRatingByUser_DuplicateRating_ThrowsException() {
         // Arrange
         Integer score = 4;
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(ratingRepository.existsByUserEntityIdAndProductId(userId, productId)).thenReturn(true);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> ratingService.createRatingForAuthenticatedUser(productId, score)
+                () -> ratingService.createRatingByUser(userId, productId, score)
         );
         assertEquals("El usuario ya ha valorado este producto", exception.getMessage());
     }
 
     @Test
-    void createRatingForAuthenticatedUser_ValidScore_SavesWithCorrectScore() {
+    void createRatingByUser_ValidScore_SavesWithCorrectScore() {
         // Arrange
         Integer score = 5;
+        when(userRepository.findById(userId)).thenReturn(Optional.of(userEntity));
         when(productRepository.findById(productId)).thenReturn(Optional.of(product));
         when(ratingRepository.existsByUserEntityIdAndProductId(userId, productId)).thenReturn(false);
-        
+
         Rating savedRating = new Rating();
         savedRating.setScore(score);
         savedRating.setUserEntity(userEntity);
         savedRating.setProduct(product);
         savedRating.setId(UUID.randomUUID());
-        
+
         RatingResponseDto responseDto = RatingResponseDto.builder()
                 .id(savedRating.getId())
                 .userId(userId)
                 .productId(productId)
                 .score(score)
                 .build();
-        
-        when(ratingMapper.toEntityFromRequestWithUserAndProduct(any(ProductRatingRequest.class), any(UserEntity.class), any(Product.class)))
-                .thenReturn(savedRating);
+
         when(ratingRepository.save(any(Rating.class))).thenReturn(savedRating);
         when(ratingMapper.toResponseDto(any(Rating.class))).thenReturn(responseDto);
 
         // Act
-        RatingResponseDto result = ratingService.createRatingForAuthenticatedUser(productId, score);
+        RatingResponseDto result = ratingService.createRatingByUser(userId, productId, score);
 
         // Assert
         assertEquals(score, result.getScore());

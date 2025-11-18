@@ -1,18 +1,21 @@
-package com.codebytes2.recommender.controller;
+package com.codebytes2.recommender.rating.controller;
 
+import com.codebytes2.recommender.controller.RatingController;
 import com.codebytes2.recommender.dto.request.ProductRatingRequest;
 import com.codebytes2.recommender.dto.response.RatingResponseDto;
 import com.codebytes2.recommender.service.RatingService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -31,7 +34,7 @@ class RatingControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @MockBean
+    @MockitoBean
     private RatingService ratingService;
 
     @Test
@@ -53,7 +56,7 @@ class RatingControllerTest {
                 .score(score)
                 .build();
         
-        given(ratingService.createRatingForAuthenticatedUser(eq(productId), eq(score)))
+        given(ratingService.createRatingByUser(any(UUID.class),eq(productId), eq(score)))
                 .willReturn(responseDto);
 
         // Act & Assert
@@ -72,20 +75,20 @@ class RatingControllerTest {
         // Arrange
         UUID productId = UUID.randomUUID();
         Integer score = 5;
-        
+
         ProductRatingRequest request = ProductRatingRequest.builder()
                 .productId(productId)
                 .score(score)
                 .build();
-        
+
         RatingResponseDto responseDto = RatingResponseDto.builder()
                 .id(UUID.randomUUID())
-                .userId(UUID.randomUUID())
+                .userId(UUID.randomUUID()) // Random ID since we don't know the actual user ID
                 .productId(productId)
                 .score(score)
                 .build();
-        
-        given(ratingService.createRatingForAuthenticatedUser(eq(productId), eq(score)))
+
+        given(ratingService.createRatingByUser(any(UUID.class), eq(productId), eq(score)))
                 .willReturn(responseDto);
 
         // Act & Assert

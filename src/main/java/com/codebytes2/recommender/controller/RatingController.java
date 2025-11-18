@@ -116,7 +116,11 @@ public class RatingController {
     @PostMapping
     @PreAuthorize("hasRole('PLAYER') or hasRole('ADMIN')")
     public ResponseEntity<RatingResponseDto> createRating(@Valid @RequestBody ProductRatingRequest request) {
-        RatingResponseDto rating = ratingService.createRatingForAuthenticatedUser(request.getProductId(), request.getScore());
+        // Get the authenticated user ID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserEntity authenticatedUser = (UserEntity) authentication.getPrincipal();
+
+        RatingResponseDto rating = ratingService.createRatingByUser(authenticatedUser.getId(), request.getProductId(), request.getScore());
         return ResponseEntity.status(HttpStatus.CREATED).body(rating);
     }
 

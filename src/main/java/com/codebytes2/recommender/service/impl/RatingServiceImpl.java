@@ -56,27 +56,25 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
-    public RatingResponseDto createRatingForAuthenticatedUser(UUID productId, Integer score) {
-        // Get the authenticated user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserEntity authenticatedUser = (UserEntity) authentication.getPrincipal();
+    public RatingResponseDto createRatingByUser(UUID userId, UUID productId, Integer score) {
+        // Validate if user exists
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado con ID: " + userId));
 
         // Validate if product exists
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con ID: " + productId));
 
         // Check if user has already rated this product
-        if (ratingRepository.existsByUserEntityIdAndProductId(authenticatedUser.getId(), product.getId())) {
+        if (ratingRepository.existsByUserEntityIdAndProductId(user.getId(), product.getId())) {
             throw new IllegalArgumentException("El usuario ya ha valorado este producto");
         }
 
-        // Create new rating using mapper
-        ProductRatingRequest request = ProductRatingRequest.builder()
-                .productId(productId)
-                .score(score)
-                .build();
-
-        Rating rating = ratingMapper.toEntityFromRequestWithUserAndProduct(request, authenticatedUser, product);
+        // Create new rating
+        Rating rating = new Rating();
+        rating.setUserEntity(user);
+        rating.setProduct(product);
+        rating.setScore(score);
 
         Rating savedRating = ratingRepository.save(rating);
         return ratingMapper.toResponseDto(savedRating);

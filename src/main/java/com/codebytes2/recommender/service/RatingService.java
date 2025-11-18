@@ -12,7 +12,7 @@ public interface RatingService {
 
     RatingResponseDto createRating(RatingCreateRequest request);
 
-    RatingResponseDto createRatingForAuthenticatedUser(UUID productId, Integer score);
+    RatingResponseDto createRatingByUser(UUID userId, UUID productId, Integer score);
 
     Double getAverageRatingByProduct(UUID productId);
 
