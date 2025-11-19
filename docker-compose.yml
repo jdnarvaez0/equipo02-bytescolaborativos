@@ -12,6 +12,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    restart: unless-stopped
     networks:
       - recommender-net
 
@@ -32,6 +33,11 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - recommender-net
 

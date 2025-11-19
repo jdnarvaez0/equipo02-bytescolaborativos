@@ -21,11 +21,13 @@ RUN --mount=type=cache,target=/root/.m2 \
 FROM eclipse-temurin:17-jre
 WORKDIR /app
 
-# Copiar el JAR generado desde la etapa de build
-COPY --from=builder /app/target/recommender-engine-0.0.1-SNAPSHOT.jar app.jar
+# Copiar JAR con nombre genérico
+COPY --from=builder /app/target/*.jar app.jar
 
-# Exponer el puerto de la aplicación
+# Exponer puerto + HEALTHCHECK (clave para reinicios rápidos)
 EXPOSE 8080
+HEALTHCHECK --interval=20s --timeout=5s --start-period=40s --retries=3 \
+  CMD curl -f http://localhost:8080/api/health || exit 1
 
-# Ejecutar la aplicación
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Ejecutar (con flags de JVM para desarrollo)
+ENTRYPOINT ["java", "-Dspring.profiles.active=dev", "-jar", "app.jar"]
