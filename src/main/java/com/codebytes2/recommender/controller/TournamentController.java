@@ -3,11 +3,14 @@ package com.codebytes2.recommender.controller;
 import com.codebytes2.recommender.auth.commons.dto.response.ErrorResponse;
 import com.codebytes2.recommender.backend.TournamentStatus;
 import com.codebytes2.recommender.dto.request.TournamentCreateRequest;
+import com.codebytes2.recommender.dto.request.TournamentJoinRequest;
 import com.codebytes2.recommender.dto.response.TournamentDetailDto;
+import com.codebytes2.recommender.dto.response.TournamentJoinResponse;
 import com.codebytes2.recommender.dto.response.TournamentSummaryDto;
 import com.codebytes2.recommender.service.TournamentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -22,6 +25,8 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -284,6 +289,170 @@ public class TournamentController {
             @PageableDefault(size = 20, sort = "startDate") Pageable pageable) {
         Page<TournamentSummaryDto> tournaments = service.searchTournamentsByGame(game, pageable);
         return ResponseEntity.ok(tournaments);
+    }
+
+    @Operation(
+            summary = "Listar torneos con filtros y paginación",
+            description = "Endpoint público. Lista torneos disponibles con paginación, filtros y ordenación.",
+            parameters = {
+                    @Parameter(name = "page", description = "Número de página (0-based)", example = "0", in = ParameterIn.QUERY),
+                    @Parameter(name = "size", description = "Elementos por página", example = "10", in = ParameterIn.QUERY),
+                    @Parameter(name = "sort", description = "Criterio de ordenación (ej: startDate,asc)", example = "startDate,asc", in = ParameterIn.QUERY),
+                    @Parameter(name = "status", description = "Filtrar por estado del torneo (UPCOMING, OPEN, CLOSED)", example = "OPEN", in = ParameterIn.QUERY),
+                    @Parameter(name = "game", description = "Filtrar por nombre del juego", example = "Valorant", in = ParameterIn.QUERY),
+                    @Parameter(name = "q", description = "Texto libre para búsqueda en nombre o descripción", example = "LATAM", in = ParameterIn.QUERY)
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Lista paginada de torneos con filtros aplicados",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(
+                                            type = "object",
+                                            example = """
+                            {
+                              "content": [
+                                {
+                                  "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                                  "name": "Torneo Valorant LATAM",
+                                  "status": "OPEN",
+                                  "game": "Valorant",
+                                  "participants": 50
+                                }
+                              ],
+                              "pageable": {
+                                "pageNumber": 0,
+                                "pageSize": 10,
+                                "sort": {
+                                  "empty": false,
+                                  "sorted": true,
+                                  "unsorted": false
+                                }
+                              },
+                              "totalElements": 1,
+                              "totalPages": 1,
+                              "first": true,
+                              "last": true
+                            }
+                            """
+                                    )
+                            )
+                    )
+            }
+    )
+    @GetMapping
+    public ResponseEntity<Page<TournamentSummaryDto>> getAllTournaments(
+            @PageableDefault(size = 20, sort = "startDate") Pageable pageable,
+            @RequestParam(required = false) TournamentStatus status,
+            @RequestParam(required = false) String game,
+            @RequestParam(required = false, name = "q") String searchQuery) {
+
+        Page<TournamentSummaryDto> tournaments = service.getAllTournaments(pageable, status, game, searchQuery);
+        return ResponseEntity.ok(tournaments);
+    }
+
+    @Operation(
+            summary = "Unirse a un torneo",
+            description = "Permite a un jugador unirse a un torneo. Valida existencia del torneo, periodo de inscripción activo, plazas disponibles y que el usuario no esté ya inscrito.",
+            security = @SecurityRequirement(name = "bearerAuth"),
+            parameters = {
+                    @Parameter(
+                            name = "id",
+                            description = "ID del torneo (UUID)",
+                            required = true,
+                            example = "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                    ),
+                    @Parameter(
+                            name = "Authorization",
+                            description = "Bearer token para autenticación (rol PLAYER)",
+                            in = ParameterIn.HEADER,
+                            required = true
+                    )
+            },
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Datos de inscripción al torneo",
+                    required = true,
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = TournamentJoinRequest.class),
+                            examples = @ExampleObject(
+                                    name = "Ejemplo de solicitud",
+                                    value = """
+                        {
+                          "nickname": "DevChPlayer"
+                        }
+                        """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Inscripción completada exitosamente",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = TournamentJoinResponse.class),
+                                    examples = @ExampleObject(
+                                            name = "Respuesta exitosa",
+                                            value = """
+                            {
+                              "message": "Inscripción completada",
+                              "tournamentId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+                              "userId": "c23fa1b2-c3d4-e5f6-7890-123456789abc",
+                              "status": "REGISTERED"
+                            }
+                            """
+                                    )
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Solicitud inválida (campos faltantes, fuera de periodo de inscripción, sin plazas, ya inscrito)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "No autenticado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "403",
+                            description = "Acceso denegado (no es PLAYER)",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Torneo no encontrado",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ErrorResponse.class)
+                            )
+                    )
+            }
+    )
+    @PostMapping("/{id}/join")
+    @PreAuthorize("hasRole('PLAYER')")
+    public ResponseEntity<TournamentJoinResponse> joinTournament(
+            @PathVariable UUID id,
+            @Valid @RequestBody TournamentJoinRequest request) {
+
+        // Get the authenticated user ID
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        com.codebytes2.recommender.auth.commons.models.entity.UserEntity authenticatedUser =
+                (com.codebytes2.recommender.auth.commons.models.entity.UserEntity) authentication.getPrincipal();
+
+        TournamentJoinResponse response = service.joinTournament(id, authenticatedUser.getId(), request);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(

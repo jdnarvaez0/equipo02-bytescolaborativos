@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
@@ -30,6 +31,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // JWT no requiere CSRF
+                .anonymous(anonymous -> anonymous.disable()) // No crear usuarios anónimos
                 .authorizeHttpRequests(authz -> authz
 
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
@@ -41,15 +43,18 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/tournaments/search/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/tournaments/{id}").permitAll()  // UUID explícito
 
-                        .requestMatchers(HttpMethod.POST, "/api/tournaments").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/api/tournaments/{id}").hasRole("ADMIN")
-
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // JWT = sin estado
                 )
                 .userDetailsService(userDetailsService)
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Unauthorized\",\"status\":" + HttpServletResponse.SC_UNAUTHORIZED + "}");
+                        }))
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

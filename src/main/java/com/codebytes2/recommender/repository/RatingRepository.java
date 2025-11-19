@@ -10,4 +10,5 @@ public interface RatingRepository extends JpaRepository<Rating, UUID> {
     List<Rating> findByUserEntityId(UUID userId);
     List<Rating> findByProductId(UUID productId);
     boolean existsByUserEntityIdAndProductId(UUID userId, UUID productId);
+    long countByProductId(UUID productId);
 }
