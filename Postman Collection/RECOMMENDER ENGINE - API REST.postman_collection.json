@@ -1,8 +1,8 @@
 {
 	"info": {
-		"_postman_id": "a32cbc6c-cdbd-4c6a-8ab0-3336e4a5df79",
+		"_postman_id": "f1482b4d-6a50-452f-9c1a-9f97256c2183",
 		"name": "RECOMMENDER ENGINE - API REST",
-		"description": "Colección porbar el API REST de **RECOMMENDER ENGINE**:\n\n_(Configuración, BD, Auth JWT, CRUD Torneos, Swagger)_.\n\n- Pre-requisito: App corriendo en localhost:8080",
+		"description": "Colección para probar el API REST de **RECOMMENDER ENGINE**:\n\n_(Configuración, BD, Auth JWT, CRUD Torneos, Ratings, Recomendaciones)_.\n\n- Pre-requisito: App corriendo en localhost:8080",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "45943072"
 	},
@@ -376,6 +376,151 @@
 									"key": "game",
 									"value": "valorant"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ratings (PLAYER)",
+			"item": [
+				{
+					"name": "POST Rate Product",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+									"pm.test(\"Response has productId and score\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.have.property(\"productId\");",
+									"    pm.expect(json).to.have.property(\"score\");",
+									"    pm.expect(json.score).to.be.within(1, 5);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{playerToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"11111111-1111-1111-1111-111111111111\",\n  \"score\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ratings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "POST Rate Product (Duplicate)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 409\", () => pm.response.to.have.status(409));",
+									"pm.test(\"Error message contains 'already rated'\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json.message).to.include(\"ya valorado\");",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{playerToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"11111111-1111-1111-1111-111111111111\",\n  \"score\": 4\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ratings",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ratings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recomendaciones",
+			"item": [
+				{
+					"name": "GET Recommendations (Player)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+									"pm.test(\"Response has userId and productIds\", () => {",
+									"    const json = pm.response.json();",
+									"    pm.expect(json).to.have.property(\"userId\");",
+									"    pm.expect(json).to.have.property(\"productIds\");",
+									"    pm.expect(json.productIds).to.be.an(\"array\");",
+									"    pm.expect(json.productIds.length).to.be.at.least(1);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{playerToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/recommendations/{{player4Id}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"recommendations",
+								"{{player4Id}}"
 							]
 						}
 					},
