@@ -13,8 +13,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "ratings",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "product_id"}))
+@Table(name = "ratings", uniqueConstraints = @UniqueConstraint(columnNames = { "user_id", "product_id" }))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -41,6 +40,12 @@ public class Rating {
     private Integer score; // 1 a 5
 
     @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
+    private Instant createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+    }
 }

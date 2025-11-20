@@ -4,9 +4,11 @@ import com.codebytes2.recommender.dto.request.ProductCreateRequest;
 import com.codebytes2.recommender.dto.request.ProductUpdateRequest;
 import com.codebytes2.recommender.dto.response.ProductDetailDto;
 import com.codebytes2.recommender.dto.response.ProductSummaryDto;
+import com.codebytes2.recommender.exceptions.ProductHasRatingsException;
 import com.codebytes2.recommender.mapper.ProductMapper;
 import com.codebytes2.recommender.model.Product;
 import com.codebytes2.recommender.repository.ProductRepository;
+import com.codebytes2.recommender.repository.RatingRepository;
 import com.codebytes2.recommender.service.ProductService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final RatingRepository ratingRepository;
 
     @Override
     public ProductDetailDto createProduct(ProductCreateRequest request) {
@@ -57,6 +60,14 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(UUID id) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con ID: " + id));
+
+        // Check if product has ratings
+        long ratingsCount = ratingRepository.countByProductId(id);
+        if (ratingsCount > 0) {
+            throw new ProductHasRatingsException(
+                    "No se puede eliminar el producto porque tiene " + ratingsCount +
+                            " valoración(es) asociada(s). Elimine primero las valoraciones.");
+        }
 
         productRepository.delete(product);
     }

@@ -18,7 +18,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder  // Add this annotation
+@Builder // Add this annotation
 public class Tournament {
 
     @Id
@@ -52,10 +52,11 @@ public class Tournament {
     private TournamentStatus status;
 
     @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
+    private Instant createdAt;
 
     @OneToMany(mappedBy = "tournament", fetch = FetchType.LAZY)
     @JsonIgnore
+    @Builder.Default
     private List<TournamentRegistration> registrations = new ArrayList<>();
 
     @Transient
@@ -68,10 +69,18 @@ public class Tournament {
 
     @Transient
     public int getAvailableSlots() {
-        if (maxParticipants == null) return Integer.MAX_VALUE;
+        if (maxParticipants == null)
+            return Integer.MAX_VALUE;
         return Math.max(0, maxParticipants - getRegisteredCount());
     }
 
     public void setParticipants(ArrayList<Object> objects) {
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 }

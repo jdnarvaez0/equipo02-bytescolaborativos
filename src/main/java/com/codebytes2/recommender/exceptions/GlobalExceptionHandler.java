@@ -24,14 +24,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage()));
+        ex.getBindingResult().getFieldErrors()
+                .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
 
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 "Error de validación",
-                errors
-        );
+                errors);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
@@ -41,8 +40,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.UNAUTHORIZED.value(),
                 "Credenciales inválidas",
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.UNAUTHORIZED);
     }
 
@@ -52,15 +50,15 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 ex.getMessage(),
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
-        // Intenta extraer un mensaje más específico si es posible, si no, usa uno genérico.
+        // Intenta extraer un mensaje más específico si es posible, si no, usa uno
+        // genérico.
         String message = "Conflicto de datos: uno de los valores que intentas guardar ya existe.";
         if (ex.getMostSpecificCause() != null && ex.getMostSpecificCause().getMessage() != null) {
             // Ejemplo: "llave duplicada viola restricción de unicidad..."
@@ -73,8 +71,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
                 message,
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -84,8 +81,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 
@@ -95,8 +91,27 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DuplicateRatingException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorResponse> handleDuplicateRatingException(DuplicateRatingException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                (Map<String, String>) null);
+        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(ProductHasRatingsException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ResponseEntity<ErrorResponse> handleProductHasRatingsException(ProductHasRatingsException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.CONFLICT.value(),
+                ex.getMessage(),
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -106,8 +121,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
     }
 
@@ -117,8 +131,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.FORBIDDEN.value(),
                 "Acceso denegado: No tienes los permisos necesarios para esta acción.",
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
@@ -128,8 +141,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "Ocurrió un error inesperado en el servidor.",
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -139,8 +151,7 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.NOT_FOUND.value(),
                 ex.getMessage(),
-                (Map<String, String>) null
-        );
+                (Map<String, String>) null);
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
 }

@@ -25,15 +25,23 @@ public class Recommendation {
     private UUID userId;
 
     @ElementCollection
-    @CollectionTable(name = "recommended_products",
-            joinColumns = @JoinColumn(name = "recommendation_result_id"))
+    @CollectionTable(name = "recommended_products", joinColumns = @JoinColumn(name = "recommendation_result_id"))
     @Column(name = "product_id")
     private List<UUID> productIds = new ArrayList<>();
 
     @Column(nullable = false, updatable = false)
-    private Instant computedAt = Instant.now();
+    private Instant computedAt;
 
     @Column(nullable = false)
-    private String algorithmVersion = "v1.0";
+    private String algorithmVersion;
 
+    @PrePersist
+    protected void onCreate() {
+        if (computedAt == null) {
+            computedAt = Instant.now();
+        }
+        if (algorithmVersion == null) {
+            algorithmVersion = "v1.0";
+        }
+    }
 }

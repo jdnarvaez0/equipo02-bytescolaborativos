@@ -5,6 +5,7 @@ import com.codebytes2.recommender.auth.repository.UserEntityRepository;
 import com.codebytes2.recommender.dto.request.RatingCreateRequest;
 import com.codebytes2.recommender.dto.request.ProductRatingRequest;
 import com.codebytes2.recommender.dto.response.RatingResponseDto;
+import com.codebytes2.recommender.exceptions.DuplicateRatingException;
 import com.codebytes2.recommender.mapper.RatingMapper;
 import com.codebytes2.recommender.model.Product;
 import com.codebytes2.recommender.model.Rating;
@@ -13,8 +14,6 @@ import com.codebytes2.recommender.repository.RatingRepository;
 import com.codebytes2.recommender.service.RatingService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -36,11 +35,12 @@ public class RatingServiceImpl implements RatingService {
 
         // Validate if product exists
         Product product = productRepository.findById(request.getProductId())
-                .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con ID: " + request.getProductId()));
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Producto no encontrado con ID: " + request.getProductId()));
 
         // Check if user has already rated this product
         if (ratingRepository.existsByUserEntityIdAndProductId(user.getId(), product.getId())) {
-            throw new IllegalArgumentException("El usuario ya ha valorado este producto");
+            throw new DuplicateRatingException("El usuario ya ha valorado este producto");
         }
 
         // Create new rating using mapper
@@ -67,7 +67,7 @@ public class RatingServiceImpl implements RatingService {
 
         // Check if user has already rated this product
         if (ratingRepository.existsByUserEntityIdAndProductId(user.getId(), product.getId())) {
-            throw new IllegalArgumentException("El usuario ya ha valorado este producto");
+            throw new DuplicateRatingException("El usuario ya ha valorado este producto");
         }
 
         // Create new rating

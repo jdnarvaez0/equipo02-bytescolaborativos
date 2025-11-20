@@ -42,16 +42,20 @@ public class UserEntity implements UserDetails {
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
+    @Builder.Default
     private Set<UserRole> roles = new HashSet<>();
 
     @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
+    private Instant createdAt;
 
+    @Builder.Default
     private boolean enabled = true;
+    @Builder.Default
     private boolean accountNonExpired = true;
+    @Builder.Default
     private boolean accountNonLocked = true;
+    @Builder.Default
     private boolean credentialsNonExpired = true;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -78,5 +82,12 @@ public class UserEntity implements UserDetails {
     @Override
     public boolean isEnabled() {
         return enabled;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
     }
 }

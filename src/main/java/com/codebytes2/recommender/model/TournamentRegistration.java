@@ -13,8 +13,8 @@ import java.time.Instant;
 import java.util.UUID;
 
 @Entity
-@Table(name = "tournament_registrations",
-        uniqueConstraints = @UniqueConstraint(columnNames = {"tournament_id", "user_id"}))
+@Table(name = "tournament_registrations", uniqueConstraints = @UniqueConstraint(columnNames = { "tournament_id",
+        "user_id" }))
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,14 +40,23 @@ public class TournamentRegistration {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private RegistrationStatus status = RegistrationStatus.REGISTERED;
+    private RegistrationStatus status;
 
     @Column(nullable = false, updatable = false)
-    private Instant registeredAt = Instant.now();
+    private Instant registeredAt;
 
     public boolean isActive() {
         return status == RegistrationStatus.REGISTERED ||
                 status == RegistrationStatus.CONFIRMED;
     }
 
+    @PrePersist
+    protected void onCreate() {
+        if (registeredAt == null) {
+            registeredAt = Instant.now();
+        }
+        if (status == null) {
+            status = RegistrationStatus.REGISTERED;
+        }
+    }
 }

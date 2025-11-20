@@ -1,0 +1,11 @@
+package com.codebytes2.recommender.exceptions;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
+
+@ResponseStatus(HttpStatus.CONFLICT)
+public class ProductHasRatingsException extends RuntimeException {
+    public ProductHasRatingsException(String message) {
+        super(message);
+    }
+}

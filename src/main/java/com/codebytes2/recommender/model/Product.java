@@ -36,6 +36,15 @@ public class Product {
     private Long popularityScore = 0L;
 
     @Column(nullable = false, updatable = false)
-    private Instant createdAt = Instant.now();
+    private Instant createdAt;
 
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = Instant.now();
+        }
+        if (popularityScore == null) {
+            popularityScore = 0L;
+        }
+    }
 }
