@@ -8,7 +8,7 @@
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0-6BA539?logo=openapiinitiative&logoColor=white)](https://swagger.io/specification/)  
 [![Coverage](https://img.shields.io/badge/Coverage-85%25-brightgreen)](https://github.com/jdnarvaez0/equipo02-bytescolaborativos.git)
 
-> 💡 **Motor de recomendaciones híbrido**: Combina *tags*, *ratings*, *popularidad* y *historial* para sugerir productos relevantes a jugadores.
+> 💡 **Motor de recomendaciones híbrido**: Combina *tags*, *ratings*, *popularidad* e *historial* para sugerir productos relevantes a jugadores.
 
 ---
 
@@ -114,7 +114,8 @@ recommender-engine/
 ├── docker-compose.yml // Servicios: app + PostgreSQL
 └── README.md
 ```
-
+### Modelo de Datos
+![Modelo de Datos / Recommender DB](recommender_db.png "Modelo de Datos")
 
 ---
 
@@ -151,7 +152,7 @@ sequenceDiagram
 }
 ```
 
-## Endpoints API
+## 📡 Endpoints API
 
 ### Autenticacion
 | Metodo | Endpoint | Acceso | Descripcion |
@@ -184,7 +185,7 @@ sequenceDiagram
 
 ---
 
-## Despliegue con Docker
+## 🐳 Despliegue con Docker
 
 ### Requisitos
 - Docker 24.0+
@@ -212,7 +213,7 @@ sequenceDiagram
 
 ---
 
-## Pruebas
+## 🧪 Pruebas
 
 ### Coleccion Postman
 - RECOMMENDER ENGINE - API REST.postman_collection.json
@@ -230,7 +231,7 @@ sequenceDiagram
 
 ---
 
-## Ejecución
+## 📈 Ejecución
 1. Construir y ejecutar
    ```
    docker-compose up --build
