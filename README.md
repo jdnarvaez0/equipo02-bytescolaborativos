@@ -5,6 +5,7 @@
 [![Docker](https://img.shields.io/badge/Docker-24.0+-2496ED?logo=docker&logoColor=white)](https://www.docker.com)  
 [![OpenAPI](https://img.shields.io/badge/OpenAPI-3.0-6BA539?logo=openapiinitiative&logoColor=white)](https://swagger.io/specification/)  
 [![Coverage](https://img.shields.io/badge/Coverage-85%25-brightgreen)](https://github.com/jdnarvaez0/equipo02-bytescolaborativos.git)
+
 ![Static Badge](https://img.shields.io/badge/Bytes%20Colaborativos-Team%20%232-blue)
 
 > 💡 **Motor de recomendaciones híbrido**: Combina *tags*, *ratings*, *popularidad* y *historial* para sugerir productos relevantes a jugadores.
